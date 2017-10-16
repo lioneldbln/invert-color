@@ -6,10 +6,6 @@
 #include "fileGuard.h"
 #include "exception_d.h"
 
-BMPImage::~BMPImage() {
-  delete[] data;
-}
-
 void BMPImage::readImage(const std::string &filePath) {
   FileGuard<std::ifstream> fileGuard(filePath, std::ios_base::in | std::ios_base::binary);
   if (!fileGuard.get().is_open()) {
@@ -35,8 +31,8 @@ void BMPImage::readImage(const std::string &filePath) {
   fileGuard.get().read(reinterpret_cast<char*>(&infoHeader.colorsUsed), sizeof(InfoHeader::colorsUsed));
   fileGuard.get().read(reinterpret_cast<char*>(&infoHeader.colorsImportant), sizeof(InfoHeader::colorsImportant));
 
-  data = new uint8_t[infoHeader.imageSize];
-  fileGuard.get().read(reinterpret_cast<char*>(data), infoHeader.imageSize);
+  data = std::unique_ptr<uint8_t[]>{new uint8_t[infoHeader.imageSize]};
+  fileGuard.get().read(reinterpret_cast<char*>(data.get()), infoHeader.imageSize);
 }
 
 void BMPImage::invertColors() {
@@ -70,7 +66,7 @@ void BMPImage::saveImage(const std::string& filePath) {
   fileGuard.get().write(reinterpret_cast<char*>(&infoHeader.colorsUsed), sizeof(InfoHeader::colorsUsed));
   fileGuard.get().write(reinterpret_cast<char*>(&infoHeader.colorsImportant), sizeof(InfoHeader::colorsImportant));
 
-  fileGuard.get().write(reinterpret_cast<char*>(data), infoHeader.imageSize);
+  fileGuard.get().write(reinterpret_cast<char*>(data.get()), infoHeader.imageSize);
 }
 
 std::ostream& operator<<(std::ostream& os, const BMPImage& img) {

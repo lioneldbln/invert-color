@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <memory>
 
 class BMPImage {
 public:
@@ -28,10 +29,10 @@ public:
 
   Header header;
   InfoHeader infoHeader;
-  uint8_t *data;
+  std::unique_ptr<uint8_t[]> data;
 
   BMPImage() : header{}, infoHeader{}, data{} {}
-  ~BMPImage();
+  ~BMPImage() = default;
   BMPImage(const BMPImage&) = delete;
   BMPImage& operator=(const BMPImage&) = delete;
   BMPImage(BMPImage&&) = delete;
