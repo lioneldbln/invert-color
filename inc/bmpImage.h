@@ -33,11 +33,12 @@ public:
 
   BMPImage() : header{}, infoHeader{}, data{} {}
   ~BMPImage() = default;
-  BMPImage(const BMPImage&) = delete;
-  BMPImage& operator=(const BMPImage&) = delete;
-  BMPImage(BMPImage&&) = delete;
-  BMPImage& operator=(BMPImage&&) = delete;
+  BMPImage(const BMPImage&);
+  BMPImage& operator=(BMPImage);
+  BMPImage(BMPImage&&);
 
+  friend void swap(BMPImage& left, BMPImage& right) noexcept;
+ 
   void readImage(const std::string& filePath);
   void invertColors();
   void saveImage(const std::string& filePath);

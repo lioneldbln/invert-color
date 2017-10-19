@@ -1,8 +1,7 @@
-#include "gmock/gmock.h"
-
 #include "commandLine.h"
-#include "exception_d.h"
 
+#include "exception_d.h"
+#include "gmock/gmock.h"
 
 class CommandLineTest : public ::testing::Test {
 public:

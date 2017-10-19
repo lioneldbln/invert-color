@@ -2,9 +2,30 @@
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 #include "fileGuard.h"
 #include "exception_d.h"
+
+BMPImage::BMPImage(const BMPImage& other) : header{other.header}, infoHeader{other.infoHeader}, data{new uint8_t[other.infoHeader.imageSize]} {
+  std::copy(other.data.get(), other.data.get()+other.infoHeader.imageSize, data.get());
+}
+
+BMPImage& BMPImage::operator=(BMPImage other) {
+  swap(*this, other);
+  return *this;
+}
+
+BMPImage::BMPImage(BMPImage&& other) : BMPImage{} {
+  swap(*this, other);
+}  
+
+void swap(BMPImage& left, BMPImage& right) noexcept {
+  using std::swap; // enable ADL
+  std::swap(left.header, right.header);
+  std::swap(left.infoHeader, right.infoHeader);
+  std::swap(left.data, right.data);
+}
 
 void BMPImage::readImage(const std::string &filePath) {
   FileGuard<std::ifstream> fileGuard(filePath, std::ios_base::in | std::ios_base::binary);
